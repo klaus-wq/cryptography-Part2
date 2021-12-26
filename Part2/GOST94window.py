@@ -47,9 +47,16 @@ class Ui_GOST94(object):
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
+
+
         self.plainTextEdit_3 = QtWidgets.QPlainTextEdit(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.plainTextEdit_3.setFont(font)
         self.plainTextEdit_3.setObjectName("plainTextEdit_3")
         self.gridLayout.addWidget(self.plainTextEdit_3, 3, 0, 1, 2)
+
+
         GOST94.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(GOST94)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 987, 26))

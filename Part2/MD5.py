@@ -123,6 +123,6 @@ def MD5(text):
     tmp.extend(bin(D)[2:].zfill(32))
     res = ''
     for i in range(4):
-        res+=hex(int.from_bytes(tmp[:32].tobytes(), byteorder="little"))[2:]
+        res+=str(hex(int.from_bytes(tmp[:32].tobytes(), byteorder="little")))[2:].zfill(8)
         tmp = tmp[32:]
     return res

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QFileDialog, QDesktopWidget
 from window import Ui_MainWindow
 import sys
 from basicAlgWindow import Ui_BasicAlg
-from basicAlg import gcd, exgcd, degree
+from basicAlg import gcd, exgcd, degree, amodp
 from RSAWindow import Ui_RSAWind
 from RSA import find_e, RSA, find_d
 from HellmanWindow import Ui_HellmanWind
@@ -15,6 +15,17 @@ from shamir import find_C
 from GamalWindow import Ui_GamalWind
 from random import randint
 from gamal import find_X
+from MD5window import Ui_MD5
+from MD5 import MD5
+from SHA1 import SHA1
+from SHA1window import Ui_SHA1
+from GOST94window import Ui_GOST94
+from GOST import GOST94
+from RSAPodpisWindow import Ui_RSAPodpisWind
+from GamalPodpisWindow import Ui_GamalPodpisWind
+from sign import find_k
+from GOSTPodpisWindow import Ui_GOSTPodpisWind
+from gost94Sign import find_a, find_krs, gen_PQ
 
 class mywindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -38,6 +49,24 @@ class mywindow(QtWidgets.QMainWindow):
             self.ex.show()
         if self.ui.comboBox.currentText() == "Эль - Гамаль":
             self.ex = GamalWindow()
+            self.ex.show()
+        if self.ui.comboBox.currentText() == "MD5":
+            self.ex = MD5Window()
+            self.ex.show()
+        if self.ui.comboBox.currentText() == "SHA-1":
+            self.ex = SHA1Window()
+            self.ex.show()
+        if self.ui.comboBox.currentText() == "ГОСТ Р 34.11-94":
+            self.ex = GOST94Window()
+            self.ex.show()
+        if self.ui.comboBox.currentText() == "ЭП RSA":
+            self.ex = RSAPodpisWindow()
+            self.ex.show()
+        if self.ui.comboBox.currentText() == "ЭП Эль-Гамаль":
+            self.ex = GamalPodpisWindow()
+            self.ex.show()
+        if self.ui.comboBox.currentText() == "ЭП ГОСТ-94":
+            self.ex = GOSTPodpisWindow()
             self.ex.show()
 
 class basicAlgWindow(QtWidgets.QMainWindow):
@@ -1247,6 +1276,1081 @@ class GamalWindow(QtWidgets.QMainWindow):
         self.ui.plainTextEdit_11.clear()
         self.ui.plainTextEdit_9.clear()
         self.ui.plainTextEdit_12.clear()
+
+class MD5Window(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(MD5Window, self).__init__()
+        self.ui = Ui_MD5()
+        self.ui.setupUi(self)
+        self.ui.pushButton.clicked.connect(self.btnClicked)
+        self.ui.pushButton_2.clicked.connect(self.btnClicked_2)
+        self.ui.pushButton_3.clicked.connect(self.btnClicked_3)
+
+    def btnClicked(self):
+        text = self.ui.plainTextEdit.toPlainText()
+        try:
+            self.ui.plainTextEdit_2.setPlainText(str(MD5(text)))
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Не удалось!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    def btnClicked_2(self):
+        if self.ui.plainTextEdit != '':
+            self.ui.plainTextEdit.clear()
+        path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+        if path == "":
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setWindowTitle("Ошибка")
+            msgBox.setText("Откройте файл!")
+            msgBox.exec_()
+            return ("")
+
+        file = open(path, 'rb')
+        text = file.read()
+        file.close()
+        try:
+            self.ui.plainTextEdit_2.setPlainText(str(MD5(text)))
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Не удалось!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    def btnClicked_3(self):
+        self.ui.plainTextEdit.clear()
+        self.ui.plainTextEdit_2.clear()
+
+class SHA1Window(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(SHA1Window, self).__init__()
+        self.ui = Ui_SHA1()
+        self.ui.setupUi(self)
+        self.ui.pushButton.clicked.connect(self.btnClicked)
+        self.ui.pushButton_2.clicked.connect(self.btnClicked_2)
+        self.ui.pushButton_3.clicked.connect(self.btnClicked_3)
+
+    def btnClicked(self):
+        text = self.ui.plainTextEdit.toPlainText()
+        try:
+            self.ui.plainTextEdit_2.setPlainText(str(SHA1(text)))
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Не удалось!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    def btnClicked_2(self):
+        if self.ui.plainTextEdit != '':
+            self.ui.plainTextEdit.clear()
+        path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+        if path == "":
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setWindowTitle("Ошибка")
+            msgBox.setText("Откройте файл!")
+            msgBox.exec_()
+            return ("")
+
+        file = open(path, 'rb')
+        text = file.read()
+        file.close()
+        try:
+            self.ui.plainTextEdit_2.setPlainText(str(SHA1(text)))
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Не удалось!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    def btnClicked_3(self):
+        self.ui.plainTextEdit.clear()
+        self.ui.plainTextEdit_2.clear()
+
+class GOST94Window(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(GOST94Window, self).__init__()
+        self.ui = Ui_GOST94()
+        self.ui.setupUi(self)
+        self.ui.pushButton.clicked.connect(self.btnClicked)
+        self.ui.pushButton_2.clicked.connect(self.btnClicked_2)
+        self.ui.pushButton_3.clicked.connect(self.btnClicked_3)
+
+    def btnClicked(self):
+        if self.ui.plainTextEdit_3.toPlainText() != '':
+            vector_init = self.ui.plainTextEdit_3.toPlainText()
+            for i in range(len(vector_init)):
+                if vector_init[i] != 0 and vector_init[i] != 1 and len(vector_init) != 256:
+                    vector_init = '00000'.zfill(256)
+                    QtWidgets.QMessageBox.critical(self, "Ошибка", "Вектор инициализации из 0 и 1!", QtWidgets.QMessageBox.Ok)
+                    return None
+        else:
+            vector_init = '00000'.zfill(256)
+        text = self.ui.plainTextEdit.toPlainText()
+        try:
+            self.ui.plainTextEdit_2.setPlainText(str(GOST94(text, vector_init)))
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Не удалось!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    def btnClicked_2(self):
+        if self.ui.plainTextEdit_3.toPlainText() != '':
+            vector_init = self.ui.plainTextEdit_3.toPlainText()
+            for i in range(len(vector_init)):
+                if vector_init[i] != 0 and vector_init[i] != 1 and len(vector_init) != 256:
+                    vector_init = '00000'.zfill(256)
+                    QtWidgets.QMessageBox.critical(self, "Ошибка", "Вектор инициализации из 0 и 1!", QtWidgets.QMessageBox.Ok)
+        else:
+            vector_init = '00000'.zfill(256)
+        if self.ui.plainTextEdit.toPlainText() != '':
+            self.ui.plainTextEdit.clear()
+        path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+        if path == "":
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setWindowTitle("Ошибка")
+            msgBox.setText("Откройте файл!")
+            msgBox.exec_()
+            return ("")
+
+        file = open(path, 'rb')
+        text = file.read()
+        file.close()
+        try:
+            self.ui.plainTextEdit_2.setPlainText(str(GOST94(text, vector_init)))
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Не удалось!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    def btnClicked_3(self):
+        self.ui.plainTextEdit.clear()
+        self.ui.plainTextEdit_3.clear()
+        self.ui.plainTextEdit_2.clear()
+
+class RSAPodpisWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(RSAPodpisWindow, self).__init__()
+        self.ui = Ui_RSAPodpisWind()
+        self.ui.setupUi(self)
+        self.ui.genPQ.clicked.connect(self.btnClicked_PQ)
+        self.ui.calcCD.clicked.connect(self.btnClicked_CD)
+        self.ui.signText.clicked.connect(self.btnClicked_SignText)
+        self.ui.signFile.clicked.connect(self.btnClicked_SignFile)
+        self.ui.checkText.clicked.connect(self.btnClicked_checkText)
+        self.ui.checkFile.clicked.connect(self.btnClicked_checkFile)
+        self.ui.auto_2.clicked.connect(self.btnClicked_Auto)
+        self.ui.clear.clicked.connect(self.btnClicked_Clear)
+
+    #генерация
+    def btnClicked_PQ(self):
+        self.ui.label_16.setVisible(False)
+        primes = generator(10**100, 10**101, 2)
+        p = primes[0]
+        q = primes[1]
+        self.ui.p.setPlainText(str(p))
+        self.ui.q.setPlainText(str(q))
+        self.ui.N.setPlainText(str(p * q))
+        self.ui.N1.setPlainText(str(p * q))
+
+    #генерация ключей
+    def btnClicked_CD(self):
+        self.ui.label_16.setVisible(False)
+        if self.isCorrect() == None:
+            return None
+
+    #подписать текст
+    def btnClicked_SignText(self):
+        self.ui.label_16.setVisible(False)
+        if self.isCorrect() == None:
+            return None
+        else:
+            text = self.ui.textToPodpis.toPlainText()
+            d = int(self.ui.d.toPlainText())
+            N = int(self.ui.N.toPlainText())
+            if self.ui.comboBox.currentText() == "MD5":
+                self.ui.comboBox_2.setCurrentText("MD5")
+                y = MD5(text)
+            if self.ui.comboBox.currentText() == "SHA-1":
+                self.ui.comboBox_2.setCurrentText("SHA-1")
+                y = SHA1(text)
+            if self.ui.comboBox.currentText() == "ГОСТ Р 34.11-94":
+                self.ui.comboBox_2.setCurrentText("ГОСТ Р 34.11-94")
+                y = GOST94(text, '00000'.zfill(256))
+            s = degree(int(y, 16), d, N)
+            self.ui.s.setPlainText(str(s))
+            self.ui.s1.setPlainText(str(s))
+            self.ui.textProverka.setPlainText(text)
+            if int(y, 16) > N:
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setWindowTitle("Ошибка")
+                msgBox.setText("h(m) должно быть меньше N!")
+                msgBox.exec_()
+                return None
+
+    #подписать файл
+    def btnClicked_SignFile(self):
+        self.ui.label_16.setVisible(False)
+        if self.isCorrect() == None:
+            return None
+        else:
+            path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+            if path == "":
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setWindowTitle("Ошибка")
+                msgBox.setText("Откройте файл!")
+                msgBox.exec_()
+                return None
+
+            file = open(path, 'rb')
+            text = file.read()
+            file.close()
+
+            d = int(self.ui.d.toPlainText())
+            N = int(self.ui.N.toPlainText())
+            if self.ui.comboBox.currentText() == "MD5":
+                self.ui.comboBox_2.setCurrentText("MD5")
+                y = MD5(text)
+            if self.ui.comboBox.currentText() == "SHA-1":
+                self.ui.comboBox_2.setCurrentText("SHA-1")
+                y = SHA1(text)
+            if self.ui.comboBox.currentText() == "ГОСТ Р 34.11-94":
+                self.ui.comboBox_2.setCurrentText("ГОСТ Р 34.11-94")
+                y = GOST94(text, '00000'.zfill(256))
+            s = degree(int(y, 16), d, N)
+            self.ui.s.setPlainText(str(s))
+            self.ui.s1.setPlainText(str(s))
+            if int(y, 16) > N:
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setWindowTitle("Ошибка")
+                msgBox.setText("h(m) должно быть меньше N!")
+                msgBox.exec_()
+                return None
+
+            # path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+            # if path == "":
+            #     msgBox = QtWidgets.QMessageBox()
+            #     msgBox.setWindowTitle("Ошибка")
+            #     msgBox.setText("Откройте файл!")
+            #     msgBox.exec_()
+            #     return None
+            # file = open(path, 'wb')
+            # file.write(text)
+            # for i in s:
+            #     file.write(bytes([int(i)]))
+            # file.close()
+            # msgBox = QtWidgets.QMessageBox()
+            # msgBox.setWindowTitle("Успешно")
+            # msgBox.setText("Успешно выгружено!")
+            # msgBox.exec_()
+            # return ("")
+
+    #проверить текст
+    def btnClicked_checkText(self):
+        self.ui.label_16.setVisible(False)
+        e1 = int(self.ui.e1.toPlainText())
+        N1 = int(self.ui.N1.toPlainText())
+        s1 = int(self.ui.s1.toPlainText())
+        text = self.ui.textProverka.toPlainText()
+
+        try:
+            if self.ui.comboBox_2.currentText() == "MD5":
+                y = MD5(text)
+            if self.ui.comboBox_2.currentText() == "SHA-1":
+                y = SHA1(text)
+            if self.ui.comboBox_2.currentText() == "ГОСТ Р 34.11-94":
+                y = GOST94(text, '00000'.zfill(256))
+            yInt = str(int(y, 16) % N1)
+            w = degree(s1, e1, N1)
+            if w == yInt:
+                self.ui.resVerification.setPlainText('Верно')
+                # self.ui.label_16.setVisible(True)
+                # path = 'tree.gif'
+                # gif = QtGui.QMovie(path)
+                # self.ui.label_16.setMovie(gif)
+                # gif.start()
+            else:
+                self.ui.resVerification.setPlainText('Неверно')
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Проверка не удалась!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    #проверить файл
+    def btnClicked_checkFile(self):
+        self.ui.label_16.setVisible(False)
+        e1 = int(self.ui.e1.toPlainText())
+        N1 = int(self.ui.N1.toPlainText())
+        s1 = int(self.ui.s1.toPlainText())
+        path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+        if path == "":
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setWindowTitle("Ошибка")
+            msgBox.setText("Откройте файл!")
+            msgBox.exec_()
+            return None
+
+        file = open(path, 'rb')
+        text = file.read()
+        file.close()
+
+        try:
+            if self.ui.comboBox_2.currentText() == "MD5":
+                y = MD5(text)
+            if self.ui.comboBox_2.currentText() == "SHA-1":
+                y = SHA1(text)
+            if self.ui.comboBox_2.currentText() == "ГОСТ Р 34.11-94":
+                y = GOST94(text, '00000'.zfill(256))
+            yInt = str(int(y, 16) % N1)
+            w = degree(s1, e1, N1)
+            if w == yInt:
+                self.ui.resVerification.setPlainText('Верно')
+                # self.ui.label_16.setVisible(True)
+                # path = 'tree.gif'
+                # gif = QtGui.QMovie(path)
+                # self.ui.label_16.setMovie(gif)
+                # gif.start()
+            else:
+                self.ui.resVerification.setPlainText('Неверно')
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Проверка не удалась!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    #автозаполнение
+    def btnClicked_Auto(self):
+        self.ui.e1.setPlainText(self.ui.e.toPlainText())
+        self.ui.N1.setPlainText(self.ui.N.toPlainText())
+        self.ui.s1.setPlainText(self.ui.s.toPlainText())
+        if self.ui.comboBox.currentText() == "MD5":
+            self.ui.comboBox_2.setCurrentText("MD5")
+        if self.ui.comboBox.currentText() == "SHA-1":
+            self.ui.comboBox_2.setCurrentText("SHA-1")
+        if self.ui.comboBox.currentText() == "ГОСТ Р 34.11-94":
+            self.ui.comboBox_2.setCurrentText("ГОСТ Р 34.11-94")
+
+    #очистить
+    def btnClicked_Clear(self):
+        self.ui.label_16.setVisible(False)
+        self.ui.p.clear()
+        self.ui.q.clear()
+        self.ui.N.clear()
+        self.ui.s.clear()
+        self.ui.e.clear()
+        self.ui.N1.clear()
+        self.ui.e1.clear()
+        self.ui.s1.clear()
+        self.ui.textProverka.clear()
+        self.ui.resVerification.clear()
+        self.ui.d.clear()
+        self.ui.textToPodpis.clear()
+
+    def isCorrect(self):
+        p = self.ui.p.toPlainText()
+        q = self.ui.q.toPlainText()
+        e = self.ui.e.toPlainText()
+        if p:
+            try:
+                p = int(p)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число p!", QtWidgets.QMessageBox.Ok)
+                self.ui.p.clear()
+                return None
+            if isPrime(p) == False:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число р составное!", QtWidgets.QMessageBox.Ok)
+                self.ui.p.clear()
+                return None
+        if q:
+            try:
+                q = int(q)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число q!", QtWidgets.QMessageBox.Ok)
+                self.ui.q.clear()
+                return None
+            if isPrime(q) == False:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число q составное!", QtWidgets.QMessageBox.Ok)
+                self.ui.q.clear()
+                return None
+        if (p == q) and (p != '') and (q != ''):
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Число p == q!", QtWidgets.QMessageBox.Ok)
+            self.ui.p.clear()
+            self.ui.q.clear()
+            return None
+        if not p and not q:
+            primes = generator(10**100, 10**101, 2)
+            p = primes[0]
+            q = primes[1]
+            self.ui.p.setPlainText(str(p))
+            self.ui.q.setPlainText(str(q))
+            self.ui.N.setPlainText(str(p * q))
+            self.ui.N1.setPlainText(str(p * q))
+        elif not p:
+            p = generator(10**100, 10**101, 1)[0]
+            self.ui.p.setPlainText(str(p))
+            self.ui.N.setPlainText(str(p * q))
+            self.ui.N1.setPlainText(str(p * q))
+        elif not q:
+            q = generator(10**100, 10**101, 1)[0]
+            self.ui.q.setPlainText(str(q))
+            self.ui.N.setPlainText(str(p * q))
+            self.ui.N1.setPlainText(str(p * q))
+        if e:
+            try:
+                e = int(e)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Сгенерируете число в качестве открытого ключа!", QtWidgets.QMessageBox.Ok)
+                self.ui.e.clear()
+                return None
+        if e:
+            if e >= (p-1)*(q-1):
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "e > (p-1)*(q-1)!", QtWidgets.QMessageBox.Ok)
+                self.ui.e.clear()
+                e = find_e(p, q)
+                self.ui.e.setPlainText(str(e))
+                self.ui.e1.setPlainText(str(e))
+                d = find_d(e, p, q)
+                self.ui.d.setPlainText(str(d))
+                self.ui.N.setPlainText(str(p * q))
+                self.ui.N1.setPlainText(str(p * q))
+                return None
+            if gcd(e, (p-1)*(q-1)) != '1' and (gcd(e, p-1) == gcd(e, q-1)) != '1' and exgcd(e, (p-1)*(q-1)) == 'Обратный элемент не существует!':
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите другое е!", QtWidgets.QMessageBox.Ok)
+                self.ui.e.clear()
+                e = find_e(p, q)
+                self.ui.e.setPlainText(str(e))
+                self.ui.e1.setPlainText(str(e))
+                d = find_d(e, p, q)
+                self.ui.d.setPlainText(str(d))
+                self.ui.N.setPlainText(str(p * q))
+                self.ui.N1.setPlainText(str(p * q))
+                return None
+            else:
+                d = find_d(e, p, q)
+                self.ui.d.setPlainText(str(d))
+                self.ui.N.setPlainText(str(p * q))
+                self.ui.N1.setPlainText(str(p * q))
+        if not e:
+            e = find_e(p, q)
+            d = find_d(e, p, q)
+            self.ui.e.setPlainText(str(e))
+            self.ui.e1.setPlainText(str(e))
+            self.ui.d.setPlainText(str(d))
+            self.ui.N.setPlainText(str(p*q))
+            self.ui.N1.setPlainText(str(p*q))
+        return True
+
+class GamalPodpisWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(GamalPodpisWindow, self).__init__()
+        self.ui = Ui_GamalPodpisWind()
+        self.ui.setupUi(self)
+        self.ui.genPQ.clicked.connect(self.btnClicked_PQ)
+        self.ui.calcCD.clicked.connect(self.btnClicked_CD)
+        self.ui.signText.clicked.connect(self.btnClicked_SignText)
+        self.ui.signFile.clicked.connect(self.btnClicked_SignFile)
+        self.ui.checkText.clicked.connect(self.btnClicked_checkText)
+        self.ui.checkFile.clicked.connect(self.btnClicked_checkFile)
+        self.ui.auto_2.clicked.connect(self.btnClicked_Auto)
+        self.ui.clear.clicked.connect(self.btnClicked_Clear)
+
+    # генерация простых чисел
+    def btnClicked_PQ(self):
+        self.ui.label_19.setVisible(False)
+        p, q = find_pq()
+        self.ui.p.setPlainText(str(p))
+        self.ui.p1.setPlainText(str(p))
+        self.ui.q.setPlainText(str(q))
+
+    #генерация параметров
+    def btnClicked_CD(self):
+        self.ui.label_19.setVisible(False)
+        if self.isCorrect() == None:
+            return None
+
+    #подписать текст
+    def btnClicked_SignText(self):
+        self.ui.label_19.setVisible(False)
+        if self.isCorrect() == None:
+            return None
+        else:
+            text = self.ui.textToPodpis.toPlainText()
+            p = int(self.ui.p.toPlainText())
+            g = int(self.ui.g.toPlainText())
+            Xa = int(self.ui.Xa.toPlainText())
+            k = int(self.ui.k.toPlainText())
+            if self.ui.comboBox.currentText() == "MD5":
+                self.ui.comboBox_2.setCurrentText("MD5")
+                y = MD5(text)
+            if self.ui.comboBox.currentText() == "SHA-1":
+                self.ui.comboBox_2.setCurrentText("SHA-1")
+                y = SHA1(text)
+            if self.ui.comboBox.currentText() == "ГОСТ Р 34.11-94":
+                self.ui.comboBox_2.setCurrentText("ГОСТ Р 34.11-94")
+                y = GOST94(text, '00000'.zfill(256))
+            yInt = int(y, 16)
+            r = int(degree(g, k, p))
+            u = (yInt - Xa * r) % (p - 1)
+            s = int(exgcd(k, p - 1)) * u % (p - 1)
+            self.ui.s.setPlainText(str(s))
+            self.ui.s1.setPlainText(str(s))
+            self.ui.r.setPlainText(str(r))
+            self.ui.r1.setPlainText(str(r))
+            self.ui.textProverka.setPlainText(text)
+            if yInt > p:
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setWindowTitle("Ошибка")
+                msgBox.setText("h(m) должно быть меньше p!")
+                msgBox.exec_()
+                return None
+
+    # подписать файл
+    def btnClicked_SignFile(self):
+        self.ui.label_19.setVisible(False)
+        if self.isCorrect() == None:
+            return None
+        else:
+            path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+            if path == "":
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setWindowTitle("Ошибка")
+                msgBox.setText("Откройте файл!")
+                msgBox.exec_()
+                return None
+
+            file = open(path, 'rb')
+            text = file.read()
+            file.close()
+
+            p = int(self.ui.p.toPlainText())
+            Xa = int(self.ui.Xa.toPlainText())
+            k = int(self.ui.k.toPlainText())
+            g = int(self.ui.g.toPlainText())
+            if self.ui.comboBox.currentText() == "MD5":
+                self.ui.comboBox_2.setCurrentText("MD5")
+                y = MD5(text)
+            if self.ui.comboBox.currentText() == "SHA-1":
+                self.ui.comboBox_2.setCurrentText("SHA-1")
+                y = SHA1(text)
+            if self.ui.comboBox.currentText() == "ГОСТ Р 34.11-94":
+                self.ui.comboBox_2.setCurrentText("ГОСТ Р 34.11-94")
+                y = GOST94(text, '00000'.zfill(256))
+            yInt = int(y, 16)
+            r = int(degree(g, k, p))
+            u = (yInt - Xa * r) % (p - 1)
+            s = int(exgcd(k, p - 1)) * u % (p - 1)
+            self.ui.s.setPlainText(str(s))
+            self.ui.s1.setPlainText(str(s))
+            self.ui.r.setPlainText(str(r))
+            self.ui.r1.setPlainText(str(r))
+            if yInt > p:
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setWindowTitle("Ошибка")
+                msgBox.setText("h(m) должно быть меньше p!")
+                msgBox.exec_()
+
+    # проверить текст
+    def btnClicked_checkText(self):
+        self.ui.label_19.setVisible(False)
+        p1 = int(self.ui.p1.toPlainText())
+        g1 = int(self.ui.g1.toPlainText())
+        s1 = int(self.ui.s1.toPlainText())
+        r1 = int(self.ui.r1.toPlainText())
+        Ya1 = int(self.ui.Ya1.toPlainText())
+        text = self.ui.textProverka.toPlainText()
+        try:
+            if self.ui.comboBox_2.currentText() == "MD5":
+                y = MD5(text)
+            if self.ui.comboBox_2.currentText() == "SHA-1":
+                y = SHA1(text)
+            if self.ui.comboBox_2.currentText() == "ГОСТ Р 34.11-94":
+                y = GOST94(text, '00000'.zfill(256))
+            yInt = int(y, 16)
+            left = (int(degree(Ya1, r1, p1)) * int(degree(r1, s1, p1))) % p1
+            right = int(degree(g1, yInt, p1))
+            if left == right:
+                self.ui.resVerification.setPlainText('Верно')
+                # path = 'tree1.gif'
+                # gif = QtGui.QMovie(path)
+                # self.ui.label_19.setMovie(gif)
+                # gif.start()
+            else:
+                self.ui.resVerification.setPlainText('Неверно')
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Проверка не удалась!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    # проверить файл
+    def btnClicked_checkFile(self):
+        self.ui.label_19.setVisible(False)
+        p1 = int(self.ui.p1.toPlainText())
+        g1 = int(self.ui.g1.toPlainText())
+        s1 = int(self.ui.s1.toPlainText())
+        r1 = int(self.ui.r1.toPlainText())
+        Ya1 = int(self.ui.Ya1.toPlainText())
+        path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+        if path == "":
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setWindowTitle("Ошибка")
+            msgBox.setText("Откройте файл!")
+            msgBox.exec_()
+            return None
+
+        file = open(path, 'rb')
+        text = file.read()
+        file.close()
+        try:
+            if self.ui.comboBox_2.currentText() == "MD5":
+                y = MD5(text)
+            if self.ui.comboBox_2.currentText() == "SHA-1":
+                y = SHA1(text)
+            if self.ui.comboBox_2.currentText() == "ГОСТ Р 34.11-94":
+                y = GOST94(text, '00000'.zfill(256))
+            yInt = int(y, 16)
+            left = (int(degree(Ya1, r1, p1)) * int(degree(r1, s1, p1))) % p1
+            right = int(degree(g1, yInt, p1))
+            if left == right:
+                self.ui.resVerification.setPlainText('Верно')
+                # path = 'tree1.gif'
+                # gif = QtGui.QMovie(path)
+                # self.ui.label_19.setMovie(gif)
+                # gif.start()
+            else:
+                self.ui.resVerification.setPlainText('Неверно')
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Проверка не удалась!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    # автозаполнение
+    def btnClicked_Auto(self):
+        self.ui.label_19.setVisible(False)
+        self.ui.p1.setPlainText(self.ui.p.toPlainText())
+        self.ui.g1.setPlainText(self.ui.g.toPlainText())
+        self.ui.s1.setPlainText(self.ui.s.toPlainText())
+        self.ui.r1.setPlainText(self.ui.r.toPlainText())
+        if self.ui.comboBox.currentText() == "MD5":
+            self.ui.comboBox_2.setCurrentText("MD5")
+        if self.ui.comboBox.currentText() == "SHA-1":
+            self.ui.comboBox_2.setCurrentText("SHA-1")
+        if self.ui.comboBox.currentText() == "ГОСТ Р 34.11-94":
+            self.ui.comboBox_2.setCurrentText("ГОСТ Р 34.11-94")
+
+    # очистить
+    def btnClicked_Clear(self):
+        self.ui.label_19.setVisible(False)
+        self.ui.p.clear()
+        self.ui.q.clear()
+        self.ui.g.clear()
+        self.ui.s.clear()
+        self.ui.s1.clear()
+        self.ui.k.clear()
+        self.ui.r.clear()
+        self.ui.r1.clear()
+        self.ui.Xa.clear()
+        self.ui.Ya.clear()
+        self.ui.p1.clear()
+        self.ui.g1.clear()
+        self.ui.Ya1.clear()
+        self.ui.textProverka.clear()
+        self.ui.resVerification.clear()
+        self.ui.textToPodpis.clear()
+
+    def isCorrect(self):
+        p = self.ui.p.toPlainText()
+        q = self.ui.q.toPlainText()
+        g = self.ui.g.toPlainText()
+        if q:
+            try:
+                q = int(q)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.q.clear()
+                return None
+            if isPrime(q) == False:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число q составное!", QtWidgets.QMessageBox.Ok)
+                self.ui.q.clear()
+                return None
+        if p:
+            try:
+                p = int(p)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.p.clear()
+                return None
+            if isPrime(p) == False:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число p составное!", QtWidgets.QMessageBox.Ok)
+                self.ui.p.clear()
+                return None
+            if q:
+                if int(p) != 2 * int(q) + 1:
+                    QtWidgets.QMessageBox.critical(self, "Ошибка", "Число p != 2*q+1!", QtWidgets.QMessageBox.Ok)
+                    self.ui.p.clear()
+                    return None
+        if q and not p:
+            p = 2 * q + 1
+            if isPrime(p) == False:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число p составное! Введите другое q!", QtWidgets.QMessageBox.Ok)
+                return None
+            else:
+                self.ui.p.setPlainText(str(p))
+                self.ui.p1.setObjectName(str(p))
+        if p and not q:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите сначала q!", QtWidgets.QMessageBox.Ok)
+            return None
+        if not p and not q:
+            p, q = find_pq()
+            self.ui.p.setPlainText(str(p))
+            self.ui.p1.setPlainText(str(p))
+            self.ui.q.setPlainText(str(q))
+        if g:
+            try:
+                g = int(g)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.g.clear()
+                return None
+            if degree(g, q, p) == '1':
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "g^q mod p == 1!", QtWidgets.QMessageBox.Ok)
+                self.ui.g.clear()
+                g = find_g(q, p)
+                self.ui.g.setPlainText(str(g))
+                self.ui.g1.setPlainText(str(g))
+                return None
+        if not g:
+            g = find_g(q, p)
+            self.ui.g.setPlainText(str(g))
+            self.ui.g1.setPlainText(str(g))
+        Xa = self.ui.Xa.toPlainText()
+        Ya = self.ui.Ya.toPlainText()
+        if Xa:
+            try:
+                Xa = int(Xa)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.Xa.clear()
+                return None
+        else:
+            Xa = find_X(int(p))
+            self.ui.Xa.setPlainText(str(Xa))
+        if Ya:
+            try:
+                Ya = int(Ya)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.Ya.clear()
+                return None
+        else:
+            Ya = degree(int(g), int(Xa), int(p))
+            self.ui.Ya.setPlainText(Ya)
+            self.ui.Ya1.setPlainText(Ya)
+        if Xa and not Ya:
+            try:
+                Xa = int(Xa)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.Ya.clear()
+                return None
+            Ya = degree(int(g), int(Xa), int(p))
+            self.ui.Ya.setPlainText(Ya)
+            self.ui.Ya1.setPlainText(Ya)
+        k = self.ui.k.toPlainText()
+        if k:
+            try:
+                k = int(k)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.k.clear()
+                return None
+            if int(k) > int(p) - 1:
+                k = int(k) % (int(p)-1)
+                self.ui.k.setPlainText(str(k))
+            if gcd(int(k), int(p)-1) != '1':
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "k должно быть взаимнопростым с p - 1!", QtWidgets.QMessageBox.Ok)
+                self.ui.k.clear()
+                return None
+        else:
+            k = find_k(p)
+            self.ui.k.setPlainText(str(k))
+        return True
+
+class GOSTPodpisWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(GOSTPodpisWindow, self).__init__()
+        self.ui = Ui_GOSTPodpisWind()
+        self.ui.setupUi(self)
+        self.ui.genPQ.clicked.connect(self.btnClicked_PQ)
+        self.ui.genPQ.clicked.connect(self.btnClicked_PQ)
+        self.ui.calcCD.clicked.connect(self.btnClicked_CD)
+        self.ui.signText.clicked.connect(self.btnClicked_SignText)
+        self.ui.signFile.clicked.connect(self.btnClicked_SignFile)
+        self.ui.checkText.clicked.connect(self.btnClicked_checkText)
+        self.ui.checkFile.clicked.connect(self.btnClicked_checkFile)
+        self.ui.auto_2.clicked.connect(self.btnClicked_Auto)
+        self.ui.clear.clicked.connect(self.btnClicked_Clear)
+
+    #генерация !!неверно
+    def btnClicked_PQ(self):
+        p, q = gen_PQ()
+        self.ui.p.setPlainText(str(p))
+        self.ui.q.setPlainText(str(q))
+        self.ui.p1.setPlainText(str(p))
+        self.ui.q1.setPlainText(str(q))
+
+    #генерация параметров
+    def btnClicked_CD(self):
+        if self.isCorrect() == None:
+            return None
+
+    #подписать текст
+    def btnClicked_SignText(self):
+        if self.isCorrect() == None:
+            return None
+        else:
+            text = self.ui.textToPodpis.toPlainText()
+            p = int(self.ui.p.toPlainText())
+            q = int(self.ui.q.toPlainText())
+            a = int(self.ui.a.toPlainText())
+            Xa = int(self.ui.Xa.toPlainText())
+            y = GOST94(text, '00000'.zfill(256))
+            yInt = int(y, 16) % q
+            k, r, s = find_krs(a, p, q, yInt, Xa)
+            self.ui.s.setPlainText(str(s))
+            self.ui.s1.setPlainText(str(s))
+            self.ui.r.setPlainText(str(r))
+            self.ui.r1.setPlainText(str(r))
+            self.ui.k.setPlainText(str(k))
+            self.ui.textProverka.setPlainText(text)
+            # if yInt > q:
+            #     msgBox = QtWidgets.QMessageBox()
+            #     msgBox.setWindowTitle("Ошибка")
+            #     msgBox.setText("h(m) должно быть меньше q!")
+            #     msgBox.exec_()
+            #     return None
+
+    # подписать файл
+    def btnClicked_SignFile(self):
+        if self.isCorrect() == None:
+            return None
+        else:
+            path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+            if path == "":
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setWindowTitle("Ошибка")
+                msgBox.setText("Откройте файл!")
+                msgBox.exec_()
+                return None
+
+            file = open(path, 'rb')
+            text = file.read()
+            file.close()
+
+            p = int(self.ui.p.toPlainText())
+            Xa = int(self.ui.Xa.toPlainText())
+            q = int(self.ui.q.toPlainText())
+            a = int(self.ui.a.toPlainText())
+            y = GOST94(text, '00000'.zfill(256))
+            yInt = int(y, 16) % q
+            k, r, s = find_krs(a, p, q, yInt, Xa)
+            self.ui.s.setPlainText(str(s))
+            self.ui.s1.setPlainText(str(s))
+            self.ui.r.setPlainText(str(r))
+            self.ui.r1.setPlainText(str(r))
+            self.ui.k.setPlainText(str(k))
+            # if yInt > q:
+            #     msgBox = QtWidgets.QMessageBox()
+            #     msgBox.setWindowTitle("Ошибка")
+            #     msgBox.setText("h(m) должно быть меньше q!")
+            #     msgBox.exec_()
+            #     return None
+
+    # проверить текст
+    def btnClicked_checkText(self):
+        p1 = int(self.ui.p1.toPlainText())
+        q1 = int(self.ui.q1.toPlainText())
+        a1 = int(self.ui.a1.toPlainText())
+        s1 = int(self.ui.s1.toPlainText())
+        r1 = int(self.ui.r1.toPlainText())
+        Ya1 = int(self.ui.Ya1.toPlainText())
+        text = self.ui.textProverka.toPlainText()
+        try:
+            y = GOST94(text, '00000'.zfill(256))
+            yInt = int(y, 16)
+            if r1 <= 0 or r1 >= q1:
+                self.ui.resVerification.setPlainText('Подпись недействительна (0 < r < q)')
+            if s1 <= 0 or s1 >= q1:
+                self.ui.resVerification.setPlainText('Подпись недействительна (0 < s < q)')
+            yIntInv = int(exgcd(yInt, q1))
+            w = int(degree(yInt, q1 - 2, q1))
+            #u1 = (s1 * yIntInv) % q1
+            u1 = (s1*w) % q1
+            #u2 = (((-r1 * yIntInv) % q1) + q1) % q1
+            u2 = ((q1 - r1)*w) % q1
+            v = ((int(degree(a1, u1, p1)) * int(degree(Ya1, u2, p1))) % p1) % q1
+            if v == r1:
+                self.ui.resVerification.setPlainText('Верно')
+            else:
+                self.ui.resVerification.setPlainText('Неверно')
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Проверка не удалась!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    # проверить файл
+    def btnClicked_checkFile(self):
+        p1 = int(self.ui.p1.toPlainText())
+        q1 = int(self.ui.q1.toPlainText())
+        a1 = int(self.ui.a1.toPlainText())
+        s1 = int(self.ui.s1.toPlainText())
+        r1 = int(self.ui.r1.toPlainText())
+        Ya1 = int(self.ui.Ya1.toPlainText())
+        path = QFileDialog.getOpenFileName(parent=None, caption='Выберите файл')[0]
+        if path == "":
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setWindowTitle("Ошибка")
+            msgBox.setText("Откройте файл!")
+            msgBox.exec_()
+            return None
+
+        file = open(path, 'rb')
+        text = file.read()
+        file.close()
+        try:
+            y = GOST94(text, '00000'.zfill(256))
+            yInt = int(y, 16)
+            if r1 <= 0 or r1 >= q1:
+                self.ui.resVerification.setPlainText('Подпись недействительна (0 < r < q)')
+            if s1 <= 0 or s1 >= q1:
+                self.ui.resVerification.setPlainText('Подпись недействительна (0 < s < q)')
+            yIntInv = int(exgcd(yInt, q1))
+            w = int(degree(yInt, q1 - 2, q1))
+            #u1 = (s1 * yIntInv) % q1
+            u1 = (s1*w) % q1
+            #u2 = (((-r1 * yIntInv) % q1) + q1) % q1
+            u2 = ((q1 - r1)*w) % q1
+            v = ((int(degree(a1, u1, p1)) * int(degree(Ya1, u2, p1))) % p1) % q1
+            if v == r1:
+                self.ui.resVerification.setPlainText('Верно')
+            else:
+                self.ui.resVerification.setPlainText('Неверно')
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Проверка не удалась!", QtWidgets.QMessageBox.Ok)
+            return None
+
+    # автозаполнение
+    def btnClicked_Auto(self):
+        self.ui.p1.setPlainText(self.ui.p.toPlainText())
+        self.ui.q1.setPlainText(self.ui.q.toPlainText())
+        self.ui.a1.setPlainText(self.ui.a.toPlainText())
+        self.ui.Ya1.setPlainText(self.ui.Ya.toPlainText())
+        self.ui.s1.setPlainText(self.ui.s.toPlainText())
+        self.ui.r1.setPlainText(self.ui.r.toPlainText())
+
+    # очистить
+    def btnClicked_Clear(self):
+        self.ui.p.clear()
+        self.ui.q.clear()
+        self.ui.a.clear()
+        self.ui.s.clear()
+        self.ui.s1.clear()
+        self.ui.k.clear()
+        self.ui.r.clear()
+        self.ui.r1.clear()
+        self.ui.Xa.clear()
+        self.ui.Ya.clear()
+        self.ui.p1.clear()
+        self.ui.a1.clear()
+        self.ui.q1.clear()
+        self.ui.Ya1.clear()
+        self.ui.textProverka.clear()
+        self.ui.resVerification.clear()
+        self.ui.textToPodpis.clear()
+
+    def isCorrect(self):
+        p = self.ui.p.toPlainText()
+        q = self.ui.q.toPlainText()
+        if q:
+            try:
+                q = int(q)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.q.clear()
+                return None
+            if isPrime(q) == False:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число q составное!", QtWidgets.QMessageBox.Ok)
+                self.ui.q.clear()
+                return None
+            if len(bin(q)[2:]) <= 254 or len(bin(q)[2:]) >= 256:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число q должно быть 2**254 < q < 2**256!", QtWidgets.QMessageBox.Ok)
+                self.ui.q.clear()
+                return None
+        if p:
+            try:
+                p = int(p)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.p.clear()
+                return None
+            if isPrime(p) == False:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число p составное!", QtWidgets.QMessageBox.Ok)
+                self.ui.p.clear()
+                return None
+            if len(bin(int(p))[2:]) <= 509 or len(bin(int(p))[2:]) >= 512:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число q должно быть 2**509 < p < 2**512!", QtWidgets.QMessageBox.Ok)
+                self.ui.p.clear()
+                return None
+        if p and q:
+            if (int(p) - 1) % int(q) != 0:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число q должно делителем p - 1!", QtWidgets.QMessageBox.Ok)
+                self.ui.q.clear()
+                return None
+        if not p and not q:
+            p, q = gen_PQ()
+            self.ui.p.setPlainText(str(p))
+            self.ui.p1.setPlainText(str(p))
+            self.ui.q.setPlainText(str(q))
+            self.ui.q1.setPlainText(str(q))
+        a = self.ui.a.toPlainText()
+        if a:
+            try:
+                a = int(a)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.a.clear()
+                return None
+            if int(a) <= 1 or int(a) >= int(p) - 1:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Число а должно быть 1 < a < p - 1!", QtWidgets.QMessageBox.Ok)
+                self.ui.a.clear()
+                return None
+            if degree(int(a), int(q), int(p)) != '1':
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите другое а!", QtWidgets.QMessageBox.Ok)
+                self.ui.a.clear()
+                return None
+            else:
+                self.ui.a1.setPlainText(str(a))
+        if not a:
+            a = find_a(int(p), int(q))
+            self.ui.a.setPlainText(str(a))
+            self.ui.a1.setPlainText(str(a))
+        Xa = self.ui.Xa.toPlainText()
+        Ya = self.ui.Ya.toPlainText()
+        if Xa:
+            try:
+                Xa = int(Xa)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.Xa.clear()
+                return None
+        else:
+            Xa = randint(1, int(q) - 1)
+            self.ui.Xa.setPlainText(str(Xa))
+        if Ya:
+            try:
+                Ya = int(Ya)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.Ya.clear()
+                return None
+        else:
+            Ya = degree(a, int(Xa), int(p))
+            self.ui.Ya.setPlainText(Ya)
+            self.ui.Ya1.setPlainText(Ya)
+        if Xa and not Ya:
+            try:
+                Xa = int(Xa)
+            except Exception:
+                QtWidgets.QMessageBox.critical(self, "Ошибка", "Введите число!", QtWidgets.QMessageBox.Ok)
+                self.ui.Ya.clear()
+                return None
+            Ya = degree(a, int(Xa), int(p))
+            self.ui.Ya.setPlainText(Ya)
+            self.ui.Ya1.setPlainText(Ya)
+        return True
 
 app = QtWidgets.QApplication([])
 application = mywindow()

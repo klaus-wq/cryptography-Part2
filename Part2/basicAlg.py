@@ -2,41 +2,42 @@ from PyQt5 import QtWidgets
 
 #вычисляет a mod p или -a mod p
 #первый символ числа может быть любой, если -, то отриц, иначе положит
-def amodp(a:str, p:str):
-    numb = '0123456789'
-    if not a or not p:
-        msgBox = QtWidgets.QMessageBox()
-        msgBox.setWindowTitle("Ошибка")
-        msgBox.setText("Введите a и p!")
-        msgBox.exec_()
-    for i in p:
-        if i not in numb:
-            msgBox = QtWidgets.QMessageBox()
-            msgBox.setWindowTitle("Ошибка")
-            msgBox.setText("Введите число!")
-            msgBox.exec_()
-    for i in range(1, len(a)):
-        if a[i] not in numb:
-            msgBox = QtWidgets.QMessageBox()
-            msgBox.setWindowTitle("Ошибка")
-            msgBox.setText("Введите число!")
-            msgBox.exec_()
-    if a[0] == '-' and len(a) == 1:
-        msgBox = QtWidgets.QMessageBox()
-        msgBox.setWindowTitle("Ошибка")
-        msgBox.setText("Введите число!")
-        msgBox.exec_()
+def amodp(a, p):
+    # numb = '0123456789'
+    # if not a or not p:
+    #     msgBox = QtWidgets.QMessageBox()
+    #     msgBox.setWindowTitle("Ошибка")
+    #     msgBox.setText("Введите a и p!")
+    #     msgBox.exec_()
+    # for i in p:
+    #     if i not in numb:
+    #         msgBox = QtWidgets.QMessageBox()
+    #         msgBox.setWindowTitle("Ошибка")
+    #         msgBox.setText("Введите число!")
+    #         msgBox.exec_()
+    # for i in range(1, len(a)):
+    #     if a[i] not in numb:
+    #         msgBox = QtWidgets.QMessageBox()
+    #         msgBox.setWindowTitle("Ошибка")
+    #         msgBox.setText("Введите число!")
+    #         msgBox.exec_()
+    # if a[0] == '-' and len(a) == 1:
+    #     msgBox = QtWidgets.QMessageBox()
+    #     msgBox.setWindowTitle("Ошибка")
+    #     msgBox.setText("Введите число!")
+    #     msgBox.exec_()
+    a = str(a)
     if a[0] == '-' and len(a) != 1:
         newA = int(a[1:])
         k = 1
         while k*int(p) < newA:
             k+=1
         res = (-1)*newA + int(p)*k
-    elif a[0] not in numb:
-        res = int(a[1:]) % int(p)
+    # elif a[0] not in numb:
+    #     res = int(a[1:]) % int(p)
     else:
         res = int(a) % int(p)
-    return str(res)
+    return res
 
 def gcd(a, b):
     if a == 0 or a < 0 or b == 0 or b < 0:
